@@ -6,7 +6,10 @@ const ProductManagement = () => {
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
-    imageFile: null,
+    imageFile1: null,
+    imageFile2: null,
+    imageFile3: null,
+    imageFile4: null,
     type: '',
     description: '',
   });
@@ -34,9 +37,9 @@ const ProductManagement = () => {
     setNewProduct((prevProduct) => ({ ...prevProduct, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e, imageNumber) => {
     const file = e.target.files[0];
-    setNewProduct((prevProduct) => ({ ...prevProduct, imageFile: file }));
+    setNewProduct((prevProduct) => ({ ...prevProduct, [`imageFile${imageNumber}`]: file }));
   };
 
   const handleAddProduct = async () => {
@@ -45,33 +48,41 @@ const ProductManagement = () => {
       const formData = new FormData();
       formData.append('name', newProduct.name);
       formData.append('price', newProduct.price);
-      formData.append('imageFile', newProduct.imageFile);
+      formData.append('imageFile1', newProduct.imageFile1);
+      formData.append('imageFile2', newProduct.imageFile2);
+      formData.append('imageFile3', newProduct.imageFile3);
+      formData.append('imageFile4', newProduct.imageFile4);
       formData.append('type', newProduct.type);
       formData.append('description', newProduct.description);
-
+  
       // 發送包含檔案的新增商品請求
       await axios.post('https://hcbackend.onrender.com/api/products', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
+  
       // 重新獲取商品列表
       fetchProducts();
       // 清空表單
       setNewProduct({
         name: '',
         price: '',
-        imageFile: null,
+        imageFile1: null,
+        imageFile2: null,
+        imageFile3: null,
+        imageFile4: null,
         type: '',
         description: '',
       });
+      // 重新整理整個頁面
+      window.location.reload();
     } catch (error) {
       console.error('Error adding product:', error);
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   const handleDeleteProduct = async (productId) => {
     try {
@@ -111,8 +122,20 @@ const ProductManagement = () => {
           <textarea name="description" value={newProduct.description} onChange={handleInputChange} />
         </div>
         <div>
-          <label>圖片檔案:</label>
-          <input type="file" name="imageFile" onChange={handleFileChange} />
+          <label>圖片檔案1:</label>
+          <input type="file" name="imageFile1" onChange={(e) => handleFileChange(e, 1)} />
+        </div>
+        <div>
+          <label>圖片檔案2:</label>
+          <input type="file" name="imageFile2" onChange={(e) => handleFileChange(e, 2)} />
+        </div>
+        <div>
+          <label>圖片檔案3:</label>
+          <input type="file" name="imageFile3" onChange={(e) => handleFileChange(e, 3)} />
+        </div>
+        <div>
+          <label>圖片檔案4:</label>
+          <input type="file" name="imageFile4" onChange={(e) => handleFileChange(e, 4)} />
         </div>
         <div>
           <button onClick={handleAddProduct} disabled={loading}>
@@ -128,11 +151,36 @@ const ProductManagement = () => {
         <ul>
           {products.map((product) => (
             <li key={product._id}>
+              {/* 第一張圖片 */}
               <img
-                src={`data:image/jpeg;base64,${product.image}`}
+                src={`data:image/jpeg;base64,${product.image1}`}
                 alt={product.name}
                 style={{ maxWidth: '100px', maxHeight: '100px' }}
               />
+              {/* 如果有第二張圖片，則顯示 */}
+              {product.image2 && (
+                <img
+                  src={`data:image/jpeg;base64,${product.image2}`}
+                  alt={product.name}
+                  style={{ maxWidth: '100px', maxHeight: '100px' }}
+                />
+              )}
+              {/* 如果有第三張圖片，則顯示 */}
+              {product.image3 && (
+                <img
+                  src={`data:image/jpeg;base64,${product.image3}`}
+                  alt={product.name}
+                  style={{ maxWidth: '100px', maxHeight: '100px' }}
+                />
+              )}
+              {/* 如果有第四張圖片，則顯示 */}
+              {product.image4 && (
+                <img
+                  src={`data:image/jpeg;base64,${product.image4}`}
+                  alt={product.name}
+                  style={{ maxWidth: '100px', maxHeight: '100px' }}
+                />
+              )}
               {product.name} - ${product.price}
               <br />
               車種: {product.type}
